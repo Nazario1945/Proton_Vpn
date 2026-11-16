@@ -144,3 +144,9 @@
 -dontwarn org.xbill.DNS.config.JndiContextResolverConfigProvider
 -dontwarn org.xbill.DNS.spi.DnsjavaInetAddressResolverProvider
 -dontwarn sun.net.spi.nameservice.NameServiceDescriptor
+
+# Optimización segura: Eliminar logs de debug y verbose en Release
+-assumenosideeffects class android.util.Log {
+    public static *** d(...);
+    public static *** v(...);
+}
