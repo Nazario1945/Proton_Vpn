@@ -170,7 +170,7 @@ android {
         testInstrumentationRunnerArguments clearPackageData: 'true' // Clear app data between tests.
         testInstrumentationRunnerArguments useTestStorageService: 'true'
         vectorDrawables.useSupportLibrary = true
-        resourceConfigurations = supportedLocales + ['hdpi', 'xhdpi', 'mdpi']
+        resourceConfigurations = supportedLocales
 
         manifestPlaceholders = ["gwpAsanMode": "default"]
 
