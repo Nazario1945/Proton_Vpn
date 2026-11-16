@@ -51,10 +51,14 @@ class TelemetryUploadWorkerScheduler @Inject constructor(
 ) : TelemetryUploadScheduler {
 
     override fun scheduleTelemetryUpload() {
+        // UI-Limpieza: Bloqueo de envío de telemetría
+        return
         scheduleUpload(appContext, ExistingWorkPolicy.REPLACE, "new events")
     }
 
     override fun scheduleImmediateTelemetryUpload() {
+        // UI-Limpieza: Bloqueo de envío de telemetría inmediata
+        return
         scheduleUpload(appContext, ExistingWorkPolicy.REPLACE, "new events, immediate", initialDelayMs = 0)
     }
 
@@ -89,6 +93,8 @@ class TelemetryUploadWorker @AssistedInject constructor(
 ) : CoroutineWorker(context, params) {
 
     override suspend fun doWork(): Result = withContext(mainScope.coroutineContext) {
+        // UI-Limpieza: Salida temprana para no enviar telemetría
+        return@withContext Result.success()
         ProtonLogger.logCustom(LogCategory.TELEMETRY, "UploadWorker: starting")
         if (!networkManager.isConnectedToNetwork()) {
             ProtonLogger.logCustom(LogCategory.TELEMETRY, "UploadWorker: no network, retry layer")
