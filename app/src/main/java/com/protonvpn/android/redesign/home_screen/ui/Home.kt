@@ -158,7 +158,15 @@ fun HomeRoute(
     val snackbarHostState = remember { androidx.compose.material.SnackbarHostState() }
     val fullyDrawn by remember { derivedStateOf { recentsViewState.value != null } }
 
-    val bottomPromoComponent: BottomPromoComponent? = null // UI-Limpieza
+    val bottomPromoComponent = bottomPromoBannerState?.let {
+        BottomPromoComponent(
+            state = it,
+            onClick = {
+                homeViewModel.openPromoOffer(it, context)
+            },
+            onDismiss = {
+                homeViewModel.dismissPromoOffer(it.notificationId)
+            }
         )
     }
 
@@ -197,7 +205,15 @@ fun HomeRoute(
         recentsExpandState = rememberRecentsExpandState()
     )
 
-    val prominentBannerPromo: ProminentPromoComponent? = null // UI-Limpieza
+    val prominentBannerPromo = prominentPromoBannerState?.let {
+        ProminentPromoComponent(
+            state = it,
+            onClick = {
+                homeViewModel.openPromoOffer(it, context)
+            },
+            onDismiss = {
+                homeViewModel.dismissPromoOffer(it.notificationId)
+            }
         )
     }
 
@@ -222,8 +238,8 @@ fun HomeRoute(
                 settingsChangeViewModel.showDnsReconnectionDialog(vpnUiDelegate)
         },
         snackbarHostState = snackbarHostState,
-        bottomPromoComponent = bottomPromoComponent,
-        prominentPromoComponent = prominentBannerPromo,
+        bottomPromoComponent = null, // UI-Limpieza
+        prominentPromoComponent = null, // UI-Limpieza
         connectionCardComponent = connectionCardComponent,
         recentsComponent = recentsComponent,
         adoptionComponent = adoptionComponent,
