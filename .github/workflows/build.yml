@@ -1,14 +1,16 @@
 name: Build Proton VPN Debug
 
 on:
-  workflow_dispatch: # Permite iniciar la compilación a mano desde la página
+  workflow_dispatch:
 
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout del código
+      - name: Checkout del código (con historial para los tags)
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # ¡CLAVE! Trae los tags para que Gradle sepa la versión
 
       - name: Configurar Java 17
         uses: actions/setup-java@v4
@@ -16,11 +18,16 @@ jobs:
           distribution: 'temurin'
           java-version: '17'
 
+      - name: Crear local.properties para SDK y Room
+        run: |
+          echo "sdk.dir=$ANDROID_HOME" > local.properties
+          echo "room.schemaLocation=$PWD/schemas" >> local.properties
+
       - name: Dar permisos a Gradlew
         run: chmod +x gradlew
 
       - name: Compilar APK (Debug)
-        run: ./gradlew assembleProductionVanillaOpenSourceDebug
+        run: ./gradlew assembleProductionVanillaOpenSourceDebug -Pandroidx.room.schemaLocation=$PWD/schemas
 
       - name: Subir el APK
         uses: actions/upload-artifact@v4
