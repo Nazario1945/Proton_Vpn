@@ -221,8 +221,8 @@ open class ProtonApplication : Application() {
         dependencies.settingChangesLogger
 
         dependencies.accountStateHandler.start()
-        dependencies.appExitObservability.start()
-        dependencies.appMmpObservability.start()
+        // dependencies.appExitObservability.start() // UI-Limpieza
+        // dependencies.appMmpObservability.start() // UI-Limpieza
         dependencies.appOpenMmpTracker.start()
         dependencies.autoConnectBootController.start()
         dependencies.autoLoginManager
@@ -254,7 +254,7 @@ open class ProtonApplication : Application() {
         dependencies.streamingUpsellRestrictionsDialogTrigger.start()
         dependencies.streamingUpsellRestrictionsNotificationTrigger.start()
         dependencies.vpnConnectionObservability
-        dependencies.vpnConnectionTelemetry.start()
+        // dependencies.vpnConnectionTelemetry.start() // UI-Limpieza
         dependencies.vpnErrorUiManager
         dependencies.vpnConnectionErrorHandler
         dependencies.widgetStateUpdater.start()
