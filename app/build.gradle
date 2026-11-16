@@ -132,7 +132,7 @@ def preferencesKey = System.getenv("DEPRECATED_PREF_KEY") ?: "Key"
 def serviceAccountCredentialsPath = project.hasProperty('serviceAccountFilePath') ? serviceAccountFilePath : "service_account.json"
 def testAccountPassword = System.getenv("TEST_ACCOUNT_PASS") ?: project.hasProperty('testAccountPassword') ? testAccountPassword : "Pass"
 def appId = project.hasProperty('appId') ? appId : "ch.protonvpn.android"
-def supportedLocales = ['ar', 'b+es+419', 'be', 'ca', 'cs', 'da', 'de', 'el', 'en', 'es-rES', 'es-rMX', 'fa', 'fi', 'fil', 'fr', 'hu', 'in', 'it', 'ja', 'ka', 'ko', 'nb-rNO', 'nl', 'pl', 'pt-rBR', 'pt-rPT', 'ro', 'ru', 'sk', 'sl', 'sv-rSE', 'th', 'tr', 'uk', 'vi', 'zh-rCN', 'zh-rTW']
+def supportedLocales = ['en', 'es-rES', 'es-rMX'] // UI-Limpieza: Solo Español e Inglés
 def helpers = new Helpers(rootDir, providers)
 def debugKeystorePath = System.getenv("DEBUG_KEYSTORE_FILE")
 def mavenCacheUrl = System.getenv("MAVEN_CACHE_PKG_URL")
@@ -158,6 +158,9 @@ android {
         viewBinding true
     }
     defaultConfig {
+        ndk {
+            abiFilters 'armeabi-v7a'
+        }
         applicationId appId
         multiDexEnabled true
         versionName helpers.fullVersionName
@@ -167,7 +170,7 @@ android {
         testInstrumentationRunnerArguments clearPackageData: 'true' // Clear app data between tests.
         testInstrumentationRunnerArguments useTestStorageService: 'true'
         vectorDrawables.useSupportLibrary = true
-        resourceConfigurations = supportedLocales
+        resourceConfigurations = supportedLocales + ['hdpi', 'xhdpi', 'mdpi']
 
         manifestPlaceholders = ["gwpAsanMode": "default"]
 
