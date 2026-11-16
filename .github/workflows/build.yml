@@ -1,4 +1,4 @@
-name: Build Proton VPN Debug
+name: Build Proton VPN Release (Unsigned)
 
 on:
   workflow_dispatch:
@@ -27,11 +27,11 @@ jobs:
       - name: Dar permisos a Gradlew
         run: chmod +x gradlew
 
-      - name: Compilar APK (Debug)
-        run: ./gradlew assembleProductionVanillaOpenSourceDebug
+      - name: Compilar APK (Release Unsigned)
+        run: ./gradlew assembleProductionVanillaOpenSourceRelease
 
       - name: Subir el APK
         uses: actions/upload-artifact@v4
         with:
-          name: ProtonVPN-Debug-APK
+          name: ProtonVPN-Release-Unsigned
           path: app/build/outputs/apk/**/*.apk
