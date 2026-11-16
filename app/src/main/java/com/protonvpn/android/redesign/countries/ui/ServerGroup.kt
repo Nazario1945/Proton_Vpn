@@ -336,8 +336,7 @@ fun ServerGroupItemsList(
                     is ServerGroupUiItem.Header ->
                         ServerGroupHeader(item, onOpenInfo = onOpenInfo)
 
-                    is ServerGroupUiItem.Banner ->
-                        ServerGroupBanner(item, navigateToUpsell)
+                    is ServerGroupUiItem.Banner -> Unit // UI-Limpieza
 
                     is ServerGroupUiItem.ServerGroup -> {
                         ServerGroupItem(item, onItemOpen = onItemOpen, onItemClick = onItemClick)

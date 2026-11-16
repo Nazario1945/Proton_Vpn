@@ -284,6 +284,7 @@ abstract class ServerGroupsViewModel<MainStateT>(
             // If selected type is not available (no servers), show it anyway, this can happen if
             // list was updated and some servers are removed from the list.
             .filter { it in availableTypes || it == selectedType }
+        .filter { it != ServerFilterType.P2P && it != ServerFilterType.Tor } // UI-Limpieza
             .map { filter ->
                 FilterButton(
                     filter = filter,
