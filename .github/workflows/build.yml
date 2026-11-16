@@ -1,4 +1,4 @@
-name: Build Proton VPN Release (Unsigned)
+name: Build Proton VPN Release Signed
 
 on:
   workflow_dispatch:
@@ -24,14 +24,23 @@ jobs:
       - name: Crear directorio de esquemas de Room
         run: mkdir -p app/schemas
 
+      - name: Decodificar Keystore JKS
+        run: |
+          echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 --decode > app/proton_final.jks
+
       - name: Dar permisos a Gradlew
         run: chmod +x gradlew
 
-      - name: Compilar APK (Release Unsigned)
-        run: ./gradlew assembleProductionVanillaOpenSourceRelease
+      - name: Compilar APK (Release Firmado)
+        run: |
+          ./gradlew assembleProductionVanillaOpenSourceRelease \
+          -PkeyStoreFilePath="$PWD/app/proton_final.jks" \
+          -PkeyStorePassword="${{ secrets.KEYSTORE_PASSWORD }}" \
+          -PkeyStoreKeyAlias="${{ secrets.KEY_ALIAS }}" \
+          -PkeyStoreKeyPassword="${{ secrets.KEY_PASSWORD }}"
 
-      - name: Subir el APK
+      - name: Subir el APK Firmado
         uses: actions/upload-artifact@v4
         with:
-          name: ProtonVPN-Release-Unsigned
+          name: ProtonVPN-Release-Signed-Final
           path: app/build/outputs/apk/**/*.apk
