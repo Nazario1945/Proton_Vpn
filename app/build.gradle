@@ -142,31 +142,15 @@ android {
     namespace "com.protonvpn.android"
     testNamespace 'com.protonvpn'
     useLibrary 'org.apache.http.legacy'
-    signingConfigs {
+        signingConfigs {
         release {
             storeFile file("../../proton_final.jks")
             storePassword "x5XYApRtOn_LAVED1nuYM.VB9CKxW"
             keyAlias "proton_final"
             keyPassword "x5XYApRtOn_LAVED1nuYM.VB9CKxW"
-        }
-
-        release {
-            signingConfig signingConfigs.release
-            storeFile file("../../proton_final.jks")
-            storePassword "x5XYApRtOn_LAVED1nuYM.VB9CKxW"
-            keyAlias "proton_final"
-            keyPassword "x5XYApRtOn_LAVED1nuYM.VB9CKxW"
-        }
-
-        if (debugKeystorePath) {
-            debug {
-                storeFile file(debugKeystorePath)
-                storePassword 'android'
-                keyAlias 'androiddebugkey'
-                keyPassword 'android'
-            }
         }
     }
+
     buildFeatures {
         buildConfig true
         compose true
@@ -346,15 +330,16 @@ android {
             enableUnitTestCoverage = true
             ext.alwaysUpdateBuildId = false
             minifyEnabled false
-            signingConfig signingConfigs.debug
+            
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
             buildConfigField "String", "TEST_ACCOUNT_PASSWORD",  "\"${StringEscapeUtils.escapeJava(testAccountPassword)}\""
             manifestPlaceholders = ["gwpAsanMode": "always"]
         }
         release {
+            signingConfig signingConfigs.release
             minifyEnabled true
             shrinkResources true
-            signingConfig signingConfigs.release
+            
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
