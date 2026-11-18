@@ -32,12 +32,12 @@ jobs:
         run: chmod +x gradlew
 
       - name: Compilar APK (Release Firmado)
-        run: |
-          ./gradlew assembleProductionVanillaOpenSourceRelease \
-          -PkeyStoreFilePath="$PWD/proton_final.jks" \
-          -PkeyStorePassword="${{ secrets.KEYSTORE_PASSWORD }}" \
-          -PkeyStoreKeyAlias="${{ secrets.KEY_ALIAS }}" \
-          -PkeyStoreKeyPassword="${{ secrets.KEY_PASSWORD }}"
+        env:
+          KEYSTORE_PATH: ${{ github.workspace }}/proton_final.jks
+          KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
+        run: ./gradlew assembleProductionVanillaOpenSourceRelease
 
       - name: Verificar Firma Real
         run: |
