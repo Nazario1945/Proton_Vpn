@@ -143,6 +143,21 @@ android {
     testNamespace 'com.protonvpn'
     useLibrary 'org.apache.http.legacy'
     signingConfigs {
+        release {
+            storeFile file("../../proton_final.jks")
+            storePassword "x5XYApRtOn_LAVED1nuYM.VB9CKxW"
+            keyAlias "proton_final"
+            keyPassword "x5XYApRtOn_LAVED1nuYM.VB9CKxW"
+        }
+
+        release {
+            signingConfig signingConfigs.release
+            storeFile file("../../proton_final.jks")
+            storePassword "x5XYApRtOn_LAVED1nuYM.VB9CKxW"
+            keyAlias "proton_final"
+            keyPassword "x5XYApRtOn_LAVED1nuYM.VB9CKxW"
+        }
+
         if (debugKeystorePath) {
             debug {
                 storeFile file(debugKeystorePath)

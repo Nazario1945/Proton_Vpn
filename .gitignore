@@ -11,3 +11,11 @@
 .externalNativeBuild
 pmcrypto/build/
 app/src/androidTest/assets/sensitive/
+*.bak
+*.zip
+*.py
+*.jks
+output.txt
+logs_*
+master
+prueba_token.txt
