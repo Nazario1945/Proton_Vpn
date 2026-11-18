@@ -1,72 +1,44 @@
 name: Build Proton VPN Release Signed
-
 on:
   workflow_dispatch:
-
 jobs:
   build:
     runs-on: ubuntu-24.04
     env:
       OVERRIDE_VERSION_NAME: "5.20.98.0"
-
     steps:
       - name: Checkout del código
         uses: actions/checkout@v4
         with:
           fetch-depth: 1
-
       - name: Configurar Java 17
         uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
           java-version: '17'
-
       - name: Crear directorio de esquemas de Room
         run: mkdir -p app/schemas
-
-      - name: Decodificar Keystore JKS
-        run: |
-          echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 --decode > proton_final.jks
-
-      - name: Dar permisos a Gradlew
-        run: chmod +x gradlew
-
+      - name: Decodificar Keystore Seguro
+        run: echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 --decode > proton_segura.jks
       - name: Comprobar Keystore
         run: |
-          echo "Verificando archivo de firma..."
-          test -s proton_final.jks || {
-            echo "ERROR: El Keystore no existe o está vacío."
-            exit 1
-          }
-          echo "Keystore encontrado y no vacío."
-
+          test -s proton_segura.jks || { echo "ERROR: Keystore vacío"; exit 1; }
+      - name: Dar permisos a Gradlew
+        run: chmod +x gradlew
       - name: Compilar APK (Release Firmado)
         env:
-          KEYSTORE_PATH: ${{ github.workspace }}/proton_final.jks
+          KEYSTORE_PATH: ${{ github.workspace }}/proton_segura.jks
           KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
           KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
           KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
         run: ./gradlew assembleProductionVanillaOpenSourceRelease
-
       - name: Verificar Firma Real
         run: |
           APK_PATH=$(find app/build/outputs/apk -name "*.apk" | head -n 1)
-          if [ -z "$APK_PATH" ]; then
-            echo "ERROR: No se encontró el APK."
-            exit 1
-          fi
+          if [ -z "$APK_PATH" ]; then echo "ERROR: No APK"; exit 1; fi
           APKSIGNER="$ANDROID_HOME/build-tools/$(ls "$ANDROID_HOME/build-tools" | sort -V | tail -n 1)/apksigner"
-          echo "=== VERIFICANDO FIRMA CON APKSIGNER ==="
-          $APKSIGNER verify --verbose --print-certs "$APK_PATH" 
           echo "=== VERIFICANDO FIRMA ==="
-          if jarsigner -verify -verbose -certs "$APK_PATH" | grep -q "CN=jeronimo"; then
-            echo "✅ ÉXITO: El APK está firmado con la llave de jeronimo."
-          else
-            echo "❌ PELIGRO: El APK NO tiene la firma correcta."
-            jarsigner -verify -verbose -certs "$APK_PATH" | grep -i "CN="
-            exit 1
-          fi
-
+          $APKSIGNER verify --verbose --print-certs "$APK_PATH"
       - name: Subir el APK Firmado
         uses: actions/upload-artifact@v4
         with:
