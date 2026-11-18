@@ -39,11 +39,23 @@ jobs:
           KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
         run: ./gradlew assembleProductionVanillaOpenSourceRelease
 
-      - name: Verificar Firma
+      - name: Verificar Firma Real
         run: |
-          echo "=== VERIFICANDO FIRMA DEL APK ==="
-          jarsigner -verify -verbose -certs app/build/outputs/apk/**/*.apk | grep -i "CN="
-          echo "================================="
+          echo "=== BUSCANDO EL APK ==="
+          APK_PATH=$(find app/build/outputs/apk -name "*.apk" | head -n 1)
+          echo "APK encontrado en: $APK_PATH"
+          if [ -z "$APK_PATH" ]; then
+            echo "❌ ERROR: No se generó ningún APK."
+            exit 1
+          fi
+          echo "=== VERIFICANDO FIRMA ==="
+          if jarsigner -verify -verbose -certs "$APK_PATH" | grep -q "CN=jeronimo"; then
+            echo "✅ ÉXITO: El APK está firmado con la llave de jeronimo."
+          else
+            echo "❌ PELIGRO: El APK NO tiene la firma correcta."
+            jarsigner -verify -verbose -certs "$APK_PATH" | grep -i "CN="
+            exit 1
+          fi
 
       - name: Subir el APK Firmado
         uses: actions/upload-artifact@v4
