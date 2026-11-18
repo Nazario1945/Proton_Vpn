@@ -1,4 +1,4 @@
-herename: Build Proton VPN Release Signed
+name: Build Proton VPN Release Signed
 
 on:
   workflow_dispatch:
