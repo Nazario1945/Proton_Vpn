@@ -1,4 +1,4 @@
-name: Build Proton VPN Release Signed
+herename: Build Proton VPN Release Signed
 
 on:
   workflow_dispatch:
@@ -26,18 +26,24 @@ jobs:
 
       - name: Decodificar Keystore JKS
         run: |
-          echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 --decode > app/proton_final.jks
+          echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 --decode > proton_final.jks
 
       - name: Dar permisos a Gradlew
         run: chmod +x gradlew
 
       - name: Compilar APK (Release Firmado)
+        env:
+          KEYSTORE_PATH: ${{ github.workspace }}/proton_final.jks
+          KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
+        run: ./gradlew assembleProductionVanillaOpenSourceRelease
+
+      - name: Verificar Firma
         run: |
-          ./gradlew assembleProductionVanillaOpenSourceRelease \
-          -PkeyStoreFilePath="$PWD/app/proton_final.jks" \
-          -PkeyStorePassword="${{ secrets.KEYSTORE_PASSWORD }}" \
-          -PkeyStoreKeyAlias="${{ secrets.KEY_ALIAS }}" \
-          -PkeyStoreKeyPassword="${{ secrets.KEY_PASSWORD }}"
+          echo "=== VERIFICANDO FIRMA DEL APK ==="
+          jarsigner -verify -verbose -certs app/build/outputs/apk/**/*.apk | grep -i "CN="
+          echo "================================="
 
       - name: Subir el APK Firmado
         uses: actions/upload-artifact@v4
