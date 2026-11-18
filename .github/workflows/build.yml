@@ -31,6 +31,15 @@ jobs:
       - name: Dar permisos a Gradlew
         run: chmod +x gradlew
 
+      - name: Comprobar Keystore
+        run: |
+          echo "Verificando archivo de firma..."
+          test -s proton_final.jks || {
+            echo "ERROR: El Keystore no existe o está vacío."
+            exit 1
+          }
+          echo "Keystore encontrado y no vacío."
+
       - name: Compilar APK (Release Firmado)
         env:
           KEYSTORE_PATH: ${{ github.workspace }}/proton_final.jks
@@ -41,13 +50,14 @@ jobs:
 
       - name: Verificar Firma Real
         run: |
-          echo "=== BUSCANDO EL APK ==="
           APK_PATH=$(find app/build/outputs/apk -name "*.apk" | head -n 1)
-          echo "APK encontrado en: $APK_PATH"
           if [ -z "$APK_PATH" ]; then
-            echo "❌ ERROR: No se generó ningún APK."
+            echo "ERROR: No se encontró el APK."
             exit 1
           fi
+          APKSIGNER="$ANDROID_HOME/build-tools/$(ls "$ANDROID_HOME/build-tools" | sort -V | tail -n 1)/apksigner"
+          echo "=== VERIFICANDO FIRMA CON APKSIGNER ==="
+          $APKSIGNER verify --verbose --print-certs "$APK_PATH" 
           echo "=== VERIFICANDO FIRMA ==="
           if jarsigner -verify -verbose -certs "$APK_PATH" | grep -q "CN=jeronimo"; then
             echo "✅ ÉXITO: El APK está firmado con la llave de jeronimo."

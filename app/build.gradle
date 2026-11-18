@@ -144,10 +144,19 @@ android {
     useLibrary 'org.apache.http.legacy'
         signingConfigs {
         release {
-            storeFile file(System.getenv("KEYSTORE_PATH") ?: "../../proton_final.jks")
-            storePassword "x5XYApRtOn_LAVED1nuYM.VB9CKxW"
-            keyAlias "proton_final"
-            keyPassword "x5XYApRtOn_LAVED1nuYM.VB9CKxW"
+            def ksPath = System.getenv("KEYSTORE_PATH")
+            def ksPassword = System.getenv("KEYSTORE_PASSWORD")
+            def ksAlias = System.getenv("KEY_ALIAS")
+            def kPassword = System.getenv("KEY_PASSWORD")
+
+            if (!ksPath || !ksPassword || !ksAlias || !kPassword) {
+                throw new GradleException("Faltan variables de entorno necesarias para firmar Release")
+            }
+
+            storeFile file(ksPath)
+            storePassword ksPassword
+            keyAlias ksAlias
+            keyPassword kPassword
         }
     }
 
